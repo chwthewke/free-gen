@@ -17,7 +17,9 @@ object FreegenBuild extends Build {
     val cats = "org.spire-math" %% "cats" % "0.3.0" withSources () withJavadoc ()
   }
 
-  override def settings = super.settings :+ ( EclipseKeys.skipParents in ThisBuild := false )
+  override def settings = super.settings ++ Seq(
+    EclipseKeys.skipParents in ThisBuild := false,
+    addCompilerPlugin( "org.spire-math" %% "kind-projector" % "0.7.1" cross CrossVersion.binary ) )
 
   lazy val freegenScalariformSettings = scalariformSettings ++ Seq(
     ScalariformKeys.preferences := defaultPreferences
