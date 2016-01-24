@@ -35,3 +35,7 @@ case class RandomF[A]( c : Int, v : Array[Byte] => A ) extends GenF[A] {
     new RandomF[B]( c, f compose v )
 }
 
+case class Retry[A]( n : Int, a : A ) extends GenF[A] {
+  override def map[B]( f : A => B ) : Retry[B] = Retry( n, f( a ) )
+}
+

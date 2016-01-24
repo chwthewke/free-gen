@@ -19,8 +19,9 @@ object RandomGen {
     def flatMap[A, B]( fa : RandomGen[A] )( f : A => RandomGen[B] ) : RandomGen[B] = new RandomGen( p =>
       fa.run( p ).flatMap( a => f( a ).run( p ) )
     )
-
   }
+
+  def sample[A]( g : Gen[A] )( p : Params ) : Result[A] = g.foldMap( transform ).run( p )
 
   val transform : GenF ~> RandomGen = new ( GenF ~> RandomGen ) {
     override def apply[A]( fa : GenF[A] ) : RandomGen[A] = fa match {
