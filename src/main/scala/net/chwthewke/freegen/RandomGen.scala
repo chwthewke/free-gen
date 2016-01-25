@@ -30,6 +30,7 @@ object RandomGen {
         p.random.nextBytes( bytes )
         v( bytes ).right
       } )
+      case _ => ???
     }
   }
 
