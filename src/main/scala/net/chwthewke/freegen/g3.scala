@@ -24,6 +24,10 @@ object g3 {
     def maxRetries = p.maxRetries
 
     def resize( n : Int ) = copy( p = p.copy( size = n ) )
+
+    def canRetry = retries < p.maxRetries
+
+    def tried : GenState = copy( retries = retries + 1 )
   }
 
   sealed trait Error
@@ -73,7 +77,13 @@ object g3 {
 
   case class Filter[A]( c : A => Boolean, g : GenAst[A] ) extends GenAst[A] {
     override def run( s : GenState ) : Result[A] = {
-      g.run( s ).fold( _.left, a => if ( c( a ) ) a.right else FilterFailed.left )
+      // Not stack-safe
+      g.run( s ).fold( _.left,
+        a => if ( c( a ) ) a.right
+        else {
+          if ( s.canRetry ) run( s.tried )
+          else Retried( s.retries, FilterFailed ).left
+        } )
     }
   }
 
